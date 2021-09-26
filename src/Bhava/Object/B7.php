@@ -13,7 +13,7 @@ use Jyotish\Tattva\Jiva\Nara\Manusha;
  *
  * @author Kunjara Lila das <vladya108@gmail.com>
  */
-class B7 extends BhavaObject
+class B7 extends BhavaBaseObject
 {
     /**
      * Bhava key

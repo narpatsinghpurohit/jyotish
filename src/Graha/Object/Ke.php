@@ -16,7 +16,7 @@ use Jyotish\Tattva\Jiva\Nara\Manusha;
  *
  * @author Kunjara Lila das <vladya108@gmail.com>
  */
-class Ke extends GrahaObject
+class Ke extends GrahaBaseObject
 {
     /**
      * Abbreviation of the graha

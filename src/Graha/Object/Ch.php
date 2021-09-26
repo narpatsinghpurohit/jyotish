@@ -20,7 +20,7 @@ use Jyotish\Tattva\Ayurveda;
  *
  * @author Kunjara Lila das <vladya108@gmail.com>
  */
-class Ch extends GrahaObject
+class Ch extends GrahaBaseObject
 {
     /**
      * Abbreviation of the graha

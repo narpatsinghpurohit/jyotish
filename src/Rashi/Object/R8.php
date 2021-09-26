@@ -17,7 +17,7 @@ use Jyotish\Tattva\Ayurveda;
  *
  * @author Kunjara Lila das <vladya108@gmail.com>
  */
-class R8 extends RashiObject
+class R8 extends RashiBaseObject
 {
     /**
      * Rashi key

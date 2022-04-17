@@ -1,5 +1,5 @@
 {
-    "name": "suwahas/jyotish",
+    "name": "narpatsinghpurohit/jyotish",
     "description": "PHP library for calculations in Vedic astrology",
     "keywords": [
         "jyotish", "vedic astrology", "ganita", "jataka", "muhurta", "panchanga"
@@ -9,13 +9,13 @@
     "license": "GPL-2.0+",
     "authors": [
         {
-            "name": "Kunjara Lila das",
-            "email": "vladya108@gmail.com",
-            "homepage": "http://web-art.su"
+            "name": "Narpat Singh Purohit",
+            "email": "narpatsinghpurohit7@gmail.com",
+            "homepage": "#"
         }
     ],
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.4",
         "kunjara/swetest": "master"
     },
     "autoload": {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link      http://github.com/kunjara/jyotish for the canonical source repository
  * @license   GNU General Public License version 2 or later
@@ -57,7 +58,10 @@ class Graha
      * Key of Ascendant
      */
     const KEY_LG = Lagna::KEY_LG;
-    
+
+    const KEY_PL = 'Pl';
+    const KEY_UR = 'Ur';
+    const KEY_NP = 'Np';
     /**
      * Name of Rahu (north lunar node)
      */
@@ -66,6 +70,7 @@ class Graha
      * Name of Ketu (south lunar node)
      */
     const NAME_KE = 'Ketu';
+
 
     /**
      * Benefic character
@@ -87,7 +92,7 @@ class Graha
      * Kendradhi patya dosha (functional only for Gu, Bu)
      */
     const CHARACTER_KENDRADHI = 'kendradhi';
-    
+
     /**
      * Paramatma amsha
      */
@@ -96,7 +101,7 @@ class Graha
      * Jeeva amsha
      */
     const AMSHA_JIVATMA = 'jivatma';
-    
+
     /**
      * When a planet gets retrograde and remains in that very sign
      */
@@ -114,7 +119,7 @@ class Graha
      */
     const CHESHTA_MANDA = 'manda';
     /**
-     * If the gati (speed) goes on decreasing continously after madhya gati (mid speed) 
+     * If the gati (speed) goes on decreasing continously after madhya gati (mid speed)
      */
     const CHESHTA_MANDATARA = 'mandatara';
     /**
@@ -139,12 +144,12 @@ class Graha
      */
     const RISING_DISCCENTER = 'disccenter';
     /**
-     * Hindu sunrise - astronomical sunrise + time taken by the Sun to rise half 
-     * of its diameter + time taken by the Sun to rise further to neutralize 
+     * Hindu sunrise - astronomical sunrise + time taken by the Sun to rise half
+     * of its diameter + time taken by the Sun to rise further to neutralize
      * refraction effect.
      */
     const RISING_HINDU = 'hindu';
-    
+
     /**
      * Nine grahas
      */
@@ -165,7 +170,7 @@ class Graha
      * The speed of the slowest to the fastest
      */
     const LIST_CHESHTA = 'cheshta';
-    
+
     /**
      * Pushkara bhaga
      */
@@ -177,7 +182,7 @@ class Graha
 
     /**
      * List of Grahas.
-     * 
+     *
      * @var array
      * @see Maharishi Parashara. Brihat Parashara Hora Shastra. Chapter 3, Verse 10.
      */
@@ -192,10 +197,10 @@ class Graha
         self::KEY_RA => self::NAME_RA,
         self::KEY_KE => self::NAME_KE,
     ];
-    
+
     /**
      * Planetary motions and the strengths allotted to them.
-     * 
+     *
      * @var array
      * @see Maharishi Parashara. Brihat Parashara Hora Shastra. Chapter 27, Verse 21-23.
      */
@@ -209,10 +214,10 @@ class Graha
         self::CHESHTA_CHARA => 45,
         self::CHESHTA_ATICHARA => 30,
     ];
-    
+
     /**
      * Combustion orbs.
-     * 
+     *
      * @var array
      * @see Surya Siddhanta. Chapter 9, Verse 6-9.
      * @see Varahamihira. Brihat Jataka. Chapter 7, Verse 2. Notes.
@@ -232,10 +237,10 @@ class Graha
             self::KEY_SA => 15,
         ]
     ];
-    
+
     /**
      * Mrityu bhaga.
-     * 
+     *
      * @var array
      * @see Vaidyanatha Dikshita. Jataka Parijata. Chapter 1, Verse 57.
      * @see Venkatesh Sharma. Sarvarth Chintamani. Chapter 10, Verse 47-50.
@@ -287,7 +292,7 @@ class Graha
 
     /**
      * Specifications for risings and settings.
-     * 
+     *
      * @var array
      */
     public static $risingType = [
@@ -298,15 +303,15 @@ class Graha
 
     /**
      * Devanagari 'graha' in transliteration.
-     * 
+     *
      * @var array
      * @see Jyotish\Alphabet\Devanagari
      */
-    public static $translit = ['ga','virama','ra','ha'];
+    public static $translit = ['ga', 'virama', 'ra', 'ha'];
 
     /**
      * Returns the requested instance of graha class.
-     * 
+     *
      * @param string $key The key of graha
      * @param null|array $options Options to set (optional)
      * - `relationSame`: relationship between the same grahas
@@ -323,7 +328,7 @@ class Graha
         if (!array_key_exists($key, self::$graha)) {
             throw new Exception\InvalidArgumentException("Graha with the key '$key' does not exist.");
         }
-        
+
         $grahaClass = 'Jyotish\Graha\Object\\' . $key;
         $grahaObject = new $grahaClass($options);
 
@@ -332,15 +337,14 @@ class Graha
 
     /**
      * Get mutual relationship between grahas in points.
-     * 
+     *
      * @param string $graha1 Graha key
      * @param string $graha2 Graha key
      * @return int
      */
     public static function getMutualRelation($graha1, $graha2)
     {
-        $relation = function ($graha1, $graha2)
-        {
+        $relation = function ($graha1, $graha2) {
             $Graha = self::getInstance($graha1, ['relationSame' => true]);
             return $Graha->grahaRelation[$graha2];
         };
@@ -351,10 +355,10 @@ class Graha
 
         return $relation1 + $relation2 + $add;
     }
-    
+
     /**
      * Get list of grahas.
-     * 
+     *
      * @param string $option The option to list grahas.
      * @return array List of grahas.
      */
@@ -383,10 +387,10 @@ class Graha
         }
         return $list;
     }
-    
+
     /**
      * Get list of grahas by feature.
-     * 
+     *
      * @param string $feature Feature of graha
      * @param string $value Value of feature
      * @return array
@@ -396,21 +400,21 @@ class Graha
         $list = [];
         foreach (self::$graha as $key => $name) {
             $Graha = self::getInstance($key);
-            
+
             $grahaFeature = 'graha' . ucfirst(strtolower($feature));
-            
+
             if (!property_exists($Graha, $grahaFeature)) {
                 throw new Exception\UnexpectedValueException("Graha feature '$grahaFeature' does not exist.");
             }
-            
+
             $Graha->$grahaFeature == $value ? $list[$key] = $name : null;
         }
         return $list;
     }
-    
+
     /**
      * Get combustion orbs.
-     * 
+     *
      * @param string $book
      * @return array
      */
@@ -421,15 +425,15 @@ class Graha
         } else {
             $bhaga[self::KEY_CH] = self::$bhagaAstangata[Biblio::BOOK_SS][self::KEY_CH];
         }
-        
+
         $bhagas = array_merge($bhaga, self::$bhagaAstangata[Biblio::COMMON]);
-        
+
         return $bhagas;
     }
 
     /**
      * Get list of mrityu bhaga.
-     * 
+     *
      * @param string $book
      * @return array
      */
@@ -440,9 +444,9 @@ class Graha
         } else {
             $bhaga[self::KEY_CH] = self::$bhagaMrityu[Biblio::BOOK_JP][self::KEY_CH];
         }
-        
+
         $bhagas = array_merge($bhaga, self::$bhagaMrityu[Biblio::COMMON]);
-        
+
         return $bhagas;
     }
 }

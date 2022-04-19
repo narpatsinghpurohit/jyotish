@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link      http://github.com/kunjara/jyotish for the canonical source repository
  * @license   GNU General Public License version 2 or later
@@ -44,11 +45,14 @@ class Swetest extends AbstractGanita
     protected $inputPlanets = [
         Graha::KEY_SY => '0',
         Graha::KEY_CH => '1',
-        Graha::KEY_MA => '4',
         Graha::KEY_BU => '2',
-        Graha::KEY_GU => '5',
         Graha::KEY_SK => '3',
+        Graha::KEY_MA => '4',
+        Graha::KEY_GU => '5',
         Graha::KEY_SA => '6',
+        Graha::KEY_UR => '7',
+        Graha::KEY_NP => '8',
+        Graha::KEY_PL => '9',
         Graha::KEY_RA => 'm',
     ];
 
@@ -61,8 +65,11 @@ class Swetest extends AbstractGanita
         'Venus'    => Graha::KEY_SK,
         'Saturn'   => Graha::KEY_SA,
         'meanNode' => Graha::KEY_RA,
+        'Pluto' => Graha::KEY_PL,
+        'Uranus' => Graha::KEY_UR,
+        'Neptune' => Graha::KEY_NP,
     ];
-    
+
     protected $outputHouses = [
         'house1'   => 1,
         'house2'   => 2,
@@ -77,7 +84,7 @@ class Swetest extends AbstractGanita
         'house11'  => 11,
         'house12'  => 12,
     ];
-    
+
     protected $outputLagna = [
         'Ascendant' => Lagna::KEY_LG,
         'MC'        => Lagna::KEY_MLG,
@@ -106,7 +113,7 @@ class Swetest extends AbstractGanita
 
     /**
      * Calculation of coordinates and other parameters of planets and houses.
-     * 
+     *
      * @param null|array $params Array of blocks (optional)
      * @param null|array $options Options to set (optional)
      * @return array
@@ -115,52 +122,52 @@ class Swetest extends AbstractGanita
     {
         $this->setOptions($options);
 
-        $DateTime = clone($this->Data->getDateTime());
+        $DateTime = clone ($this->Data->getDateTime());
         $DateTime->setTimezone(new DateTimeZone('UTC'));
         $Locality = $this->Data->getLocality();
 
-        $dir     = ' -edir'.$this->swe['sweph'];
-        $date    = ' -b'.$DateTime->format(Time::FORMAT_DATA_DATE);
-        $time    = ' -ut'.$DateTime->format(Time::FORMAT_DATA_TIME);
-        $sid     = ' -sid'.$this->inputAyanamsha[$this->optionAyanamsha];
-        
-        $stringHouses = ' -house'.$Locality->getLongitude().','.$Locality->getLatitude().',a';
+        $dir     = ' -edir' . $this->swe['sweph'];
+        $date    = ' -b' . $DateTime->format(Time::FORMAT_DATA_DATE);
+        $time    = ' -ut' . $DateTime->format(Time::FORMAT_DATA_TIME);
+        $sid     = ' -sid' . $this->inputAyanamsha[$this->optionAyanamsha];
+
+        $stringHouses = ' -house' . $Locality->getLongitude() . ',' . $Locality->getLatitude() . ',a';
         $stringPlanets = implode('', $this->inputPlanets);
-        
+
         if (is_null($params)) {
-            $planets = ' -p'.$stringPlanets;
+            $planets = ' -p' . $stringPlanets;
             $houses  = $stringHouses;
         } else {
             $planets = ' -p';
             $houses = '';
-            
+
             foreach ($params as $block) {
                 switch ($block) {
                     case Data::BLOCK_GRAHA:
-                        $planets = ' -p'.$stringPlanets;
+                        $planets = ' -p' . $stringPlanets;
                         break;
                     case Data::BLOCK_BHAVA:
                         $houses = $stringHouses;
                         break;
                     default:
-                        continue;
+                        break;
                 }
             }
         }
 
-        $string = 'swetest'.$dir.$date.$time.$planets.$houses.$sid.' -fPlbsad -g, -head';
-
+        $string = 'swetest' . $dir . $date . $time . $planets . $houses . $sid . ' -fPlbsad -g, -head';
         putenv("PATH={$this->swe['swetest']}");
         exec($string, $out);
 
         $dataParams = $this->formatParams($out, $params);
-        
+
+
         return $dataParams;
     }
 
     /**
      * Calculation of rising and setting time of planet.
-     * 
+     *
      * @param string $graha Graha key (optional)
      * @param null|array $options Options to set (optional)
      * @return array
@@ -168,46 +175,47 @@ class Swetest extends AbstractGanita
     public function getRising($graha = Graha::KEY_SY, array $options = null)
     {
         $this->setOptions($options);
-        
-        $DateTime = clone($this->Data->getDateTime());
+
+        $DateTime = clone ($this->Data->getDateTime());
         $DateTime->setTimezone(new DateTimeZone('UTC'));
         $DateTime->sub(new DateInterval('P2D'));
         $Locality = $this->Data->getLocality();
 
-        $dir    = ' -edir'.$this->swe['sweph'];
-        $date   = ' -b'.$DateTime->format(Time::FORMAT_DATA_DATE);
-        $planet = ' -p'.$this->inputPlanets[$graha];
-        $geopos	= ' -geopos'.$Locality->getLongitude().','.$Locality->getLatitude().',0';
-        $rising = ' -'.$this->optionRising;
+        $dir    = ' -edir' . $this->swe['sweph'];
+        $date   = ' -b' . $DateTime->format(Time::FORMAT_DATA_DATE);
+        $planet = ' -p' . $this->inputPlanets[$graha];
+        $geopos    = ' -geopos' . $Locality->getLongitude() . ',' . $Locality->getLatitude() . ',0';
+        $rising = ' -' . $this->optionRising;
 
-        $string = 'swetest'.$dir.$date.$planet.$geopos.$rising.' -n5 -rise';
+        $string = 'swetest' . $dir . $date . $planet . $geopos . $rising . ' -n5 -rise';
 
         putenv("PATH={$this->swe['swetest']}");
         exec($string, $out);
-        
+
         $dataRising = $this->formatRising($out, $graha);
-        
+
         return $dataRising;
     }
 
     /**
      * Format params.
-     * 
+     *
      * @param array $input Swetest data
      * @param null|array $params Array of blocks (optional)
      * @return array
      */
     private function formatParams(array $input, array $params = null)
     {
+
+        // dd(count($input));
         $dataParams = [];
         if (is_null($params) || (in_array(Data::BLOCK_GRAHA, $params) && in_array(Data::BLOCK_BHAVA, $params))) {
-            $count = 22;
+            $count = 25;
         } elseif (in_array(Data::BLOCK_GRAHA, $params)) {
             $count = 8;
         } elseif (in_array(Data::BLOCK_BHAVA, $params)) {
             $count = 14;
         }
-
         foreach ($input as $k => $v) {
             // Break if swetest warning
             if ($k == $count) break;
@@ -216,6 +224,7 @@ class Swetest extends AbstractGanita
             $parameters = explode(',', $parametersString);
             $bodyName   = $parameters[0];
             $units      = Math::partsToUnits($parameters[1]);
+
 
             if (array_key_exists($bodyName, $this->outputPlanets)) {
                 $dataParams[Data::BLOCK_GRAHA][$this->outputPlanets[$bodyName]] = [
@@ -264,10 +273,10 @@ class Swetest extends AbstractGanita
 
         return $dataParams;
     }
-    
+
     /**
      * Format rising.
-     * 
+     *
      * @param array $input Input data
      * @param string $graha Graha key
      * @return array
@@ -276,18 +285,18 @@ class Swetest extends AbstractGanita
     {
         $dataRising = [];
         $DateTime = $this->Data->getDateTime();
-        
-        for ($i = 1; $i <= 4; $i++) {
-            preg_match("#rise\s((.*\d+)\s+(\d{1,2}:.*))\sset\s((.*\d+)\s+(\d{1,2}:[\d\s\.:]+))#", $input[$i+1], $matches);
 
-            $risingString  = str_replace(' ', '', $matches[2]).' '.str_replace(' ', '', $matches[3]);
-            $settingString = str_replace(' ', '', $matches[5]).' '.str_replace(' ', '', $matches[6]);
+        for ($i = 1; $i <= 4; $i++) {
+            preg_match("#rise\s((.*\d+)\s+(\d{1,2}:.*))\sset\s((.*\d+)\s+(\d{1,2}:[\d\s\.:]+))#", $input[$i + 1], $matches);
+
+            $risingString  = str_replace(' ', '', $matches[2]) . ' ' . str_replace(' ', '', $matches[3]);
+            $settingString = str_replace(' ', '', $matches[5]) . ' ' . str_replace(' ', '', $matches[6]);
 
             $risingObject = new DateTime($risingString, new DateTimeZone('UTC'));
             $risingObject->setTimezone($DateTime->getTimezone());
             $settingObject = new DateTime($settingString, new DateTimeZone('UTC'));
             $settingObject->setTimezone($DateTime->getTimezone());
-            
+
             $rising = $risingObject->format(Time::FORMAT_DATETIME);
             $setting = $settingObject->format(Time::FORMAT_DATETIME);
 
